@@ -26,38 +26,55 @@ const postMarketRoll = () => {
     }
 };
 
-const strategy1 = () => {
+const strategy = (rollCountLimit, scoreCap, logToConsole) => {
     let score = 0;
 
     for(let i = 0; i<20; i++) {
         let rollCount = 3;
         let roundScore = preMarket();
+        let alive = true;
 
-        console.log(`Score: ${score}, Market opens at: ${roundScore}`);
+        if(logToConsole) console.log(`Round: ${i}, Score: ${score}, Market opens at: ${roundScore}`);
 
-        if(rollCount < 6) {
+        while(alive && rollCount < rollCountLimit && roundScore < scoreCap) {
             let roll = postMarketRoll();
-            if(roll == -1) {
+            rollCount++;
+
+            if(roll == 0) {
+                alive = false;
+                roundScore = 0;
+            } else if(roll == -1) {
                 roundScore *= 2;
-            } else if(roll == 0) {
-                continue;
             } else {
-                rollCount++;
                 roundScore += roll;
             }
 
-            console.log(`  RollCount: ${rollCount}, Roll: ${roll}, RoundScore: ${roundScore}`);
-
-        } else {
-            score += roundScore;
-            console.log();
-            continue;
+            if(logToConsole) console.log(`  Roll: ${roll}, RollCount: ${rollCount}, RoundScore: ${roundScore}`);
         }
+
+        score += roundScore;
     }
 
     return score;
 };
 
-for(let i=0; i<30; i++) {
-    console.log(postMarketRoll());
+const avgOfStrategy = (strategy, rollCountLimit, scoreCap, iterations) => {
+    let results = [];
+    for(let i=0; i<iterations; i++) {
+        results.push(strategy(rollCountLimit, scoreCap, false));
+    }
+
+    return results.reduce((a,b) => (a+b)) / results.length;
 }
+
+let iterations = 100000;
+console.log(`Strategy 1 avg.: ${avgOfStrategy(strategy, 6, 10000, iterations)}, with ${iterations} iterations.`);
+console.log(`Strategy 2 avg.: ${avgOfStrategy(strategy, 7, 10000, iterations)}, with ${iterations} iterations.`);
+console.log(`Strategy 3 avg.: ${avgOfStrategy(strategy, 8, 10000, iterations)}, with ${iterations} iterations.`);
+console.log(`Strategy 3 avg.: ${avgOfStrategy(strategy, 9, 10000, iterations)}, with ${iterations} iterations.`);
+console.log(`Strategy 3 avg.: ${avgOfStrategy(strategy, 10, 10000, iterations)}, with ${iterations} iterations.`);
+console.log(`Strategy 3 avg.: ${avgOfStrategy(strategy, 11, 10000, iterations)}, with ${iterations} iterations.`);
+console.log(`Strategy 3 avg.: ${avgOfStrategy(strategy, 12, 10000, iterations)}, with ${iterations} iterations.`);
+console.log(`Strategy 3 avg.: ${avgOfStrategy(strategy, 13, 10000, iterations)}, with ${iterations} iterations.`);
+console.log(`Strategy 3 avg.: ${avgOfStrategy(strategy, 14, 10000, iterations)}, with ${iterations} iterations.`);
+console.log(`Strategy 3 avg.: ${avgOfStrategy(strategy, 15, 10000, iterations)}, with ${iterations} iterations.`);
